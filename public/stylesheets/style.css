@@ -1,0 +1,32 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+li{ background-color: black;}
+.ok{
+  color: black;
+  font-size: larger;
+  border: 1px black solid;
+  padding: 15px;
+
+}
+.ok.child{
+  padding-top: 20px;
+}
+ul li{
+  border: 1px black solid;
+}
+.left{
+  float: left;
+}
+.right{
+  padding-left: 200px;
+  margin-top: -100px;
+  float: inherit;
+  font-size: 1.3em;
+}
