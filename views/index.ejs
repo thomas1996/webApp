@@ -1,0 +1,214 @@
+<html>
+<head class="page-header">
+  <title>E-logbook</title>
+  <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+  <link rel="stylesheet" href="/stylesheets/animate.css">
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/javascripts/wow.min.js"></script>
+  <script> new WOW().init(); </script>
+  <script src="/javascripts/angularApp.js"></script>
+  <style> .glyphicon-thumbs-up { cursor:pointer } </style>
+  <style> .glyphicon-thumbs-down { cursor:pointer } </style>
+  <style> .glyphicon-remove { cursor:pointer} </style>
+</head>
+
+<body ng-app="flapperNews" class="jumbotron">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container" ng-click="isCollapsed = !isCollapsed">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" ng-init="isCollapsed = true" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand">E-logbook</a>
+        </div>
+        <div class="navbar-collapse" ng-class="{collapse: isCollapsed}" aria-expanded="false" style="height: 1px;">
+          <nav ng-controller="NavCtrl">
+          <ul class="nav navbar-nav">
+            <li><a href="/#/home"> Home</a></li>
+            <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
+            <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
+            <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
+            <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
+          </ul>
+        </nav>
+        </div>
+      </div>
+    </nav>
+
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <ui-view></ui-view>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="/home.html">
+    <div class="page-header WOW fadeInRight">
+      <h1>E-logbook</h1>
+    </div>
+
+    <div ng-show="isLoggedIn()" class="ok" ng-repeat="post in posts | orderBy:'-houres'">
+        <span style="font-size:20px">
+
+            Manifacture: {{post.manifacture}}
+          <span ng-show="canDelete(post)" class="glyphicon glyphicon-remove" ng-click="deletePost(post)"></span>
+          <br>
+
+          <span>
+            Type: {{post.type}}
+          </span>
+          <br>
+          <span>
+            Callsign: {{post.callsign}}
+            <br>
+          </span>
+          </span>
+        <span class="right">
+          <a href="#/posts/{{post._id}}">View {{post.flights.length}} flights</a>
+
+
+        </span>
+    </div>
+    <div ng-show="posts.length < 1">
+     <h2 style="color: red;">You have to add airplaines first. </h2>
+    </div>
+    <div ng-show="error" class="alert alert-danger row WOW fadeInRight data-wow-delay="5s"">
+    <span>{{ error.message }}</span>
+    </div>
+
+      <form ng-submit="addAircraft()"
+      ng-show="isLoggedIn()"
+        style="margin-top:30px;">
+        <h3>Add a new airplaine</h3>
+
+        <div class="form-group">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="manifacture" ng-model="manifacture" required></input>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="type" ng-model="type"></input>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="callsign" ng-model="callsign"></input>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+
+        <div ng-hide="isLoggedIn()">
+        <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add an airplane.</h3>
+      </div>
+    </script>
+
+  <script type="text/ng-template" id="/posts.html">
+  <div class="page-header">
+    <h2><a href="/#/home">Back</a></h2>
+
+    <h3>
+        Callsign: {{post.callsign}}
+
+    </h3>
+  </div>
+
+  <div ng-show="isLoggedIn()" class="ok" ng-repeat="flight in post.flights | orderBy:'-houres'">
+    <span  style="font-size:20px;">
+      Pilot: {{flight.pilot}}
+
+      <br>
+      Landings: {{flight.landings}}
+      <br>
+      Flight houres: {{flight.houres}}
+    </span>
+    <span ng-show="canDelete(flight)"  class="glyphicon glyphicon-remove" ng-click="deleteFlight(comment)"></span>
+  </div>
+  <div ng-show="post.flights.length < 1">
+   <h2 style="color: red;"> You have to add flights first. </h2>
+  </div>
+
+  <div ng-show="error" class="alert alert-danger row WOW fadeInRight data-wow-delay="5s"">
+  <span>{{ error.message }}</span>
+  </div>
+  <form ng-submit="addFlight()"
+  ng-show="isLoggedIn()"
+  style="margin-top:30px;">
+    <h3>Add a new flight</h3>
+
+    <div class="form-group">
+      <input type="number" class="form-control" placeholder="Landings" ng-model="landings" min="0"></input>
+    </div>
+    <div class="form-group">
+      <input type="number" class="form-control" placeholder="Houres" ng-model="houres" min="0"></input>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+  <div ng-hide="isLoggedIn()">
+  <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can comment.</h3>
+  </div>
+</script>
+
+<script type="text/ng-template" id="/register.html">
+  <div class="page-header">
+    <h1>E-logbook</h1>
+  </div>
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+  <form ng-submit="register()"
+    style="margin-top:30px;">
+    <h3>Register</h3>
+
+    <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
+    </div>
+    <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+</script>
+
+<script type="text/ng-template" id="/login.html">
+  <div class="page-header">
+    <h1>E-logbook</h1>
+  </div>
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+
+  <form ng-submit="logIn()"
+    style="margin-top:30px;">
+    <div class="form-group">
+    <h3>Log In</h3>
+      <div class="form-group">
+      <input type="text"
+      class="form-control"
+      placeholder="Username"
+      ng-model="user.username"></input>
+      </div>
+      <div class="form-group">
+      <input type="password"
+      class="form-control"
+      placeholder="Password"
+      ng-model="user.password"></input>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+  </form>
+</script>
+
+
+</body>
+</html>
