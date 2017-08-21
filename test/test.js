@@ -1,8 +1,10 @@
 const request = require('supertest');
+const sinon = require('sinon')
 //const app = require('/routes/index');
 const app = require('../app');
 const expect = require('chai').expect;
-var User = require('../models/Users');
+var Airplaine = require('../models/Airplaines');
+var randomstring = require('randomstring');
 
 
 describe('Login API', function() {
@@ -42,8 +44,9 @@ describe('Login API', function() {
 describe('GET ', function(){
     it('respond with json', function(done){
         request(app)
-            .get('/')
+            .get('/posts')
             .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
             .expect(200)
             .end(function(err, res){
                 if (err) return done(err);
@@ -52,11 +55,45 @@ describe('GET ', function(){
     })
 });
 
-describe('User', function() {
+describe('Register API', function() {
+    it('Should succes if credentials excist', function(done) {
+        request(app)
+            .post('/register')
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .send({ username: 'test', password: 'test' })
+            .expect(500)
+            .expect('Content-Type', /json/)
+            .expect(function(response) {
+                expect(response.body).not.to.be.empty;
+                expect(response.body).to.be.an('object');
+            })
+            .end(done);
+    });
+});
+describe('Register API', function() {
+    it('Should succes if credentials dont excist', function(done) {
+        request(app)
+            .post('/register')
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json')
+            .send({ username: randomstring.generate(5), password: randomstring.generate(5) })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(function(response) {
+                expect(response.body).not.to.be.empty;
+                expect(response.body).to.be.an('object');
+            })
+            .end(done);
+    });
+});
+
+describe('Airplaine', function() {
     describe('#save()', function() {
         it('should save without error', function(done) {
-            var user = new User();
-            user.save(function(err) {
+            var plain = new Airplaine()
+
+            plain.save(function(err) {
                 if (err) done(err);
                 else done();
             });

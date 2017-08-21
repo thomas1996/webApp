@@ -162,7 +162,7 @@ function($scope, posts, auth){
 
 $scope.addAircraft = function () {
     if ($scope.manifacture) {
-        console.log(auth.currentUser());
+
         posts.create({
             manifacture: $scope.manifacture,
             type: $scope.type,
@@ -179,9 +179,6 @@ $scope.deleteAircraft = function(post){
   posts.deleteAircraft(post).error(function(error){
     $scope.error = error;
   });
-};
-$scope.showDeletePost = function(post){
-  post.author._id == auth.currentUserId();
 };
 
 $scope.canDelete = function (post) {
@@ -217,7 +214,6 @@ function($scope, posts, post, auth){
 };
 
 $scope.deleteFlight = function(flight){
-    console.log(flight);
   posts.deleteFlight(post, flight).error(function(error){
     $scope.error = error;
   }).success(function(){
@@ -230,7 +226,6 @@ $scope.showDeleteComment = function(post){
 };
 
 $scope.canDelete = function (comment) {
-    console.log(comment);
         return comment.pilot === auth.currentUser();
     }
 }]);
